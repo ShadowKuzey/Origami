@@ -7,19 +7,46 @@
 </head>
 <body>
 
-<!-- ✈️ Açılış uçak animasyonu -->
+<!-- ✈️ INTRO -->
 <div id="intro">
   <div class="plane">✈️</div>
   <h1>Foldix26PAPER</h1>
 </div>
 
-<!-- ANA SİTE -->
-<div id="site">
-  <h2>Ürünler</h2>
-  <div class="product">Origami Kuş - 50₺</div>
-  <div class="product">Origami Ejderha - 120₺</div>
+<!-- STORE -->
+<div id="app">
 
-  <button onclick="order()">Sipariş Ver</button>
+  <h1>📦 Foldix Store</h1>
+
+  <div class="grid">
+
+    <div class="card">
+      <h3>Origami Kuş</h3>
+      <p>50₺ | Stok: <span id="s1">10</span></p>
+      <button onclick="add('Origami Kuş',50,1)">Ekle</button>
+    </div>
+
+    <div class="card">
+      <h3>Origami Ejderha</h3>
+      <p>120₺ | Stok: <span id="s2">5</span></p>
+      <button onclick="add('Origami Ejderha',120,2)">Ekle</button>
+    </div>
+
+  </div>
+
+  <hr>
+
+  <h2>🛒 Sepet</h2>
+  <ul id="cart"></ul>
+
+  <input id="code" placeholder="İndirim kodu">
+  <button onclick="applyCode()">Kod Kullan</button>
+
+  <br><br>
+  <button onclick="order()">SİPARİŞ VER</button>
+
+  <p id="out"></p>
+
 </div>
 
 <script src="script.js"></script>
