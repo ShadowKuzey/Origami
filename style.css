@@ -1,10 +1,10 @@
 body {
-  margin: 0;
   font-family: Arial;
-  background: #f5f5f5;
+  margin: 0;
+  background: #f4f4f4;
+  text-align: center;
 }
 
-/* INTRO */
 #intro {
   position: fixed;
   width: 100%;
@@ -14,32 +14,42 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  animation: fadeOut 3s forwards;
-  animation-delay: 3s;
+  animation: fade 3s forwards;
+  animation-delay: 2.5s;
 }
 
 .plane {
-  font-size: 50px;
-  animation: fly 2s linear;
+  font-size: 60px;
+  animation: fly 2s ease-out;
 }
 
 @keyframes fly {
-  0% { transform: translateX(-200px) rotate(0); }
-  100% { transform: translateX(200px) translateY(-100px) rotate(30deg); }
+  0% { transform: translateX(-200px); }
+  100% { transform: translateX(200px) translateY(-100px); }
 }
 
-@keyframes fadeOut {
+@keyframes fade {
   to { opacity: 0; visibility: hidden; }
 }
 
-/* SITE */
-#site {
+#app {
   padding: 20px;
 }
 
-.product {
+.grid {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.card {
   background: white;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 8px;
+  padding: 15px;
+  border-radius: 10px;
+  width: 180px;
+}
+
+button {
+  padding: 6px;
+  cursor: pointer;
 }
