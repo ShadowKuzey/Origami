@@ -541,9 +541,9 @@
     Origami Market
   </div>
   <div class="nav-links">
-    <button class="nav-link" onclick="scrollTo('katalog')">Katalog</button>
-    <button class="nav-link" onclick="scrollTo('siparis')">Sipariş</button>
-    <button class="nav-link" onclick="scrollTo('gecmis')">Siparişler</button>
+    <button class="nav-link" onclick="goTo('katalog')">Katalog</button>
+    <button class="nav-link" onclick="goTo('siparis')">Sipariş</button>
+    <button class="nav-link" onclick="goTo('gecmis')">Siparişler</button>
   </div>
 </nav>
 
@@ -551,6 +551,7 @@
 <section class="hero" id="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
+  <canvas id="plane-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;"></canvas>
 
   <div class="hero-badge">
     <div class="hero-badge-dot"></div>
@@ -562,10 +563,10 @@
   </h1>
   <p class="hero-sub">Kağıttan sanat. Sınıfına teslim, ödeme kapıda.</p>
   <div class="hero-cta">
-    <button class="btn-primary" onclick="scrollTo('siparis')">
+    <button class="btn-primary" onclick="goTo('siparis')">
       🛒 Sipariş ver
     </button>
-    <button class="btn-secondary" onclick="scrollTo('katalog')">
+    <button class="btn-secondary" onclick="goTo('katalog')">
       📦 Ürünlere bak
     </button>
   </div>
@@ -671,7 +672,7 @@
 
   let sepet = {};
 
-  function scrollTo(id) {
+  function goTo(id) {
     document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -810,6 +811,140 @@
       renderOrders();
     }
   }
+
+  // ── KAĞIT UÇAK ANİMASYONU ──
+  (function() {
+    const canvas = document.getElementById('plane-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      const hero = document.getElementById('hero');
+      canvas.width  = hero.offsetWidth;
+      canvas.height = hero.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Bezier eğrisi boyunca uçan birden fazla uçak
+    const planes = [
+      {
+        // Sol alttan sağ üste kadar geniş yay
+        p0: { x: -60, y: 0.85 },   // başlangıç (oransal y)
+        p1: { x: 0.3,  y: 0.1  },  // kontrol noktası 1
+        p2: { x: 0.7,  y: 0.6  },  // kontrol noktası 2
+        p3: { x: 1.1,  y: 0.15 },  // bitiş
+        t: 0, speed: 0.0018, size: 22, alpha: 0.9, delay: 0
+      },
+      {
+        // Sağdan sola, daha küçük
+        p0: { x: 1.1,  y: 0.3  },
+        p1: { x: 0.75, y: 0.7  },
+        p2: { x: 0.35, y: 0.2  },
+        p3: { x: -0.1, y: 0.55 },
+        t: 0, speed: 0.0012, size: 14, alpha: 0.5, delay: 180
+      },
+      {
+        // Çapraz, orta boy
+        p0: { x: -0.05, y: 0.45 },
+        p1: { x: 0.4,   y: 0.1  },
+        p2: { x: 0.6,   y: 0.8  },
+        p3: { x: 1.05,  y: 0.4  },
+        t: 0, speed: 0.0015, size: 16, alpha: 0.65, delay: 90
+      }
+    ];
+
+    function bezier(p0, p1, p2, p3, t) {
+      const u = 1 - t;
+      return {
+        x: u*u*u*p0.x + 3*u*u*t*p1.x + 3*u*t*t*p2.x + t*t*t*p3.x,
+        y: u*u*u*p0.y + 3*u*u*t*p1.y + 3*u*t*t*p2.y + t*t*t*p3.y
+      };
+    }
+
+    function drawPlane(ctx, cx, cy, angle, size, alpha) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(angle);
+      ctx.globalAlpha = alpha;
+
+      // Kağıt uçak şekli (basit ama temiz origami görünümü)
+      ctx.beginPath();
+      // Gövde üst
+      ctx.moveTo(size,      0);
+      ctx.lineTo(-size*0.6, -size*0.45);
+      ctx.lineTo(-size*0.2, 0);
+      ctx.lineTo(-size*0.6, size*0.45);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(255,255,255,0.92)';
+      ctx.fill();
+
+      // İç kat çizgisi
+      ctx.beginPath();
+      ctx.moveTo(size, 0);
+      ctx.lineTo(-size*0.2, 0);
+      ctx.strokeStyle = 'rgba(74,222,128,0.7)';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Alt kanat kat çizgisi
+      ctx.beginPath();
+      ctx.moveTo(-size*0.2, 0);
+      ctx.lineTo(-size*0.6, size*0.45);
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    // İz (trail) için geçmiş noktalar
+    const trails = planes.map(() => []);
+    let frame = 0;
+
+    function animate() {
+      requestAnimationFrame(animate);
+      frame++;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const W = canvas.width;
+      const H = canvas.height;
+
+      planes.forEach((pl, i) => {
+        if (frame < pl.delay) return;
+
+        pl.t += pl.speed;
+        if (pl.t > 1) { pl.t = 0; trails[i] = []; }
+
+        const p0 = { x: pl.p0.x < 1 ? pl.p0.x * W : pl.p0.x, y: pl.p0.y * H };
+        const p1 = { x: pl.p1.x * W, y: pl.p1.y * H };
+        const p2 = { x: pl.p2.x * W, y: pl.p2.y * H };
+        const p3 = { x: pl.p3.x < 1.05 ? pl.p3.x * W : pl.p3.x * W, y: pl.p3.y * H };
+
+        const pos = bezier(p0, p1, p2, p3, pl.t);
+        const posNext = bezier(p0, p1, p2, p3, Math.min(pl.t + 0.01, 1));
+        const angle = Math.atan2(posNext.y - pos.y, posNext.x - pos.x);
+
+        // Trail
+        trails[i].push({ x: pos.x, y: pos.y, a: pl.alpha });
+        if (trails[i].length > 40) trails[i].shift();
+
+        // İz çiz
+        for (let j = 1; j < trails[i].length; j++) {
+          const prog = j / trails[i].length;
+          ctx.beginPath();
+          ctx.moveTo(trails[i][j-1].x, trails[i][j-1].y);
+          ctx.lineTo(trails[i][j].x,   trails[i][j].y);
+          ctx.strokeStyle = `rgba(74,222,128,${prog * pl.alpha * 0.35})`;
+          ctx.lineWidth = prog * 1.5;
+          ctx.stroke();
+        }
+
+        drawPlane(ctx, pos.x, pos.y, angle, pl.size, pl.alpha);
+      });
+    }
+
+    animate();
+  })();
 
   renderKatalog();
   renderSiparisGrid();
