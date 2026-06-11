@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Origami Market</title>
+  <title>Foldix</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
   <style>
@@ -275,6 +275,23 @@
     .section-sub { color:var(--muted2); font-size:15px; max-width:480px; margin-bottom:2.5rem; }
     .divider { width:100%; height:0.5px; background:linear-gradient(to right,transparent,var(--border2),transparent); }
 
+
+    /* ── ÜRÜN FOTOĞRAFI ── */
+    .product-img-wrap {
+      width: 100%; aspect-ratio: 1/1;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 10px; overflow: hidden; border-radius: 10px;
+      background: rgba(255,255,255,0.03);
+    }
+    .product-img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      transition: transform .3s ease;
+      mix-blend-mode: multiply;
+      filter: brightness(1.08) contrast(1.04);
+    }
+    .product-card:hover .product-img { transform: scale(1.06); }
+
     /* ── ÜRÜN GRID ── */
     .products-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; }
     .product-card {
@@ -337,7 +354,7 @@
 <nav class="navbar">
   <div class="nav-logo">
     <div class="nav-logo-dot"></div>
-    Origami Market
+    Foldix
   </div>
   <div style="display:flex;align-items:center;gap:10px;">
     <button class="cart-icon-btn" onclick="toggleCart()" aria-label="Sepet">
@@ -517,10 +534,18 @@
 </section>
 
 <div class="divider"></div>
-<footer class="footer">Origami Market &mdash; Okul içi teslimat &middot; Ödeme kapıda</footer>
+<footer class="footer">Foldix &mdash; Okul içi teslimat &middot; Ödeme kapıda</footer>
 
 <script>
   // ── ÜRÜNLER ──────────────────────────────────────────
+  const IMG = {
+    1: "data:image/webp;base64,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",
+    2: "data:image/webp;base64,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",
+    3: "data:image/webp;base64,UklGRvQDAABXRUJQVlA4IOgDAACwJQCdASrhAJABPmEwlkikIqIhIPLoQIAMCWlu4XdhFvOOtHmhMIqpT9UgpkUBcMdIS8VPekg92YoC4Y6Ql4qe9JB7sxQFwx0hLxU96SD3ZigLhjpCXip70kHuzFAXDHSEvFT3pIPdmJ/rr76t6Uj4CUE96SD1Do8PwibAHidPzAzBhYEmruSVFcEDSgi8dIS8TkGAG6eDFTcKFIconlgIryJ3aK3SX+VNhrXSEvFDy1GwtunMa2UUMPJJXIL6rZspUzpJApCXipFkQOfZxePQRbO9Nw72NUtqjJplWYOUaG4Y6QXa9xLqA/jrYzB/+FVzYoC4Y6Ql4qe9JB7sxQFwx0hLxU96SD3ZigLhjpCXip70kHuzFAXDHSEvFT3pIPdmKAuGOkJeKnvSQe7MUBcMdIS8VPZgAP7/7hwAAAAAA1NuPADaGq+OBjhZasrreLf6fWobXblPIYCtCwZjTVc+J/yfbowrmK8PkZxMAvHgL6BxPkz648KWjO4F+5lAe64x1kfFP0bn1Ciaj+qqwg4Az4AM9mv9PCLe9+srW67qDv0eP9RGb3H34Op7OlEQHYX9bthyP6i/0V9UBf2BMRt5kylXdh6Wk439r/aK/b6VS+r8wK4DjIbXB8k/wjot9/oSYy7WVlH1o/+ZCy4ugVzFH/mC6Uf+oQ4QtRBqveyG9wn+786T6sQucCa+sLoN6+X2XaBATDaL8Hd8Mi9BLJj+6GZkHc3/36VWqW5h0YMIOyDB1uBvBWnf9w5/HSGOwMzUDopPizy8nKYj3RfxYjyBr8w3xpH+gjiuNh00spDwEIYThwHpMaQc0csllB8wLgW5zaG2T+SITUco/MGp32w0ixmywa4OqV0uenuzJdx+b5QE/D8fAZK33l6Fgta5Q6i62lPYYN1R8mMKu7tAmYHBtWG3234WwDdR6gAgG6n0u+huwwhfXKoIhx7n1UtO7yOGQRVskb9mbSwOXcZV6rlEsP1Lvq6ctxkVV/vaa1a9tWGoXLyDf4o1CrsOxnuPQWUGnvBV7lKJBPfkJR8NoVybkjJWk+s8HdhjYwHx7MCgCCzC6GiSektJmYvzHnbD96kr2+eWaShH13l2VAWc0Dz/w+8glLSbbPMaHGAumt8uKPsXwAHQtjjQnWz+lOkNoCFlshhL9s6/ksYa01lZhK7cgK5PUx+irRu06vcA8307Ktkz8TYZFQE19NFd4rsMJpgnjR/BWpQhxi8WxFZ239oyapQUODJLCd3J09Y5YVUFBcDZtGixuBXMKQAjePHarHDqoV7MgExfSQ/8KN2zTQRRiIIvvHVUisJbw3gCCgccAQAAAAAAAAAA",
+    4: null,
+    5: null,
+  };
+
   const URUNLER = [
     { id:1, ad:"Tuzluk",           emoji:"🧂", fiyat:10, stok:true },
     { id:2, ad:"Uçak",             emoji:"✈️",  fiyat:5,  stok:true },
@@ -725,17 +750,21 @@
   // ── ÜRÜNLER RENDER ───────────────────────────────────
   function renderUrunler() {
     const g = document.getElementById('urunler-grid');
-    g.innerHTML = URUNLER.map(u => `
-      <div class="product-card">
-        <div class="product-emoji">${u.emoji}</div>
-        <div class="product-name">${u.ad}</div>
-        <div class="product-price">${u.fiyat} TL</div>
-        <div class="product-stock">${u.stok ? '✦ Stokta var' : '— Tükendi'}</div>
-        <button class="add-btn" data-id="${u.id}">+ Sepete Ekle</button>
-      </div>
-    `).join('');
+    g.innerHTML = URUNLER.map(u => {
+      const imgSrc = IMG[u.id];
+      const visual = imgSrc
+        ? `<div class="product-img-wrap"><img src="${imgSrc}" class="product-img" alt="${u.ad}"></div>`
+        : `<div class="product-emoji">${u.emoji}</div>`;
+      return `
+        <div class="product-card">
+          ${visual}
+          <div class="product-name">${u.ad}</div>
+          <div class="product-price">${u.fiyat} TL</div>
+          <div class="product-stock">${u.stok ? '✦ Stokta var' : '— Tükendi'}</div>
+          <button class="add-btn" data-id="${u.id}">+ Sepete Ekle</button>
+        </div>`;
+    }).join('');
 
-    // Event listener ile bağla — inline onclick yerine
     g.querySelectorAll('.add-btn').forEach(btn => {
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
