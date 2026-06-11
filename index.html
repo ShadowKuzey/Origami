@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Origami Market</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f5f5f5;
+      color: #1a1a1a;
+    }
+
+    :root {
+      --brand: #2D6A4F;
+      --brand-light: #E8F5EE;
+      --brand-mid: #52B788;
+      --border: #e0e0e0;
+      --surface: #ffffff;
+      --surface2: #f9f9f9;
+      --text: #1a1a1a;
+      --muted: #6b6b6b;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    .site {
+      max-width: 720px;
+      margin: 0 auto;
+      background: var(--surface);
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    .header {
+      padding: 1.5rem;
+      border-bottom: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .logo-area { display: flex; align-items: center; gap: 12px; }
+    .logo-icon {
+      width: 40px; height: 40px;
+      background: var(--brand);
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 20px;
+    }
+    .logo-text h1 { font-size: 18px; font-weight: 500; }
+    .logo-text p { font-size: 13px; color: var(--muted); }
+    .header-badge {
+      background: var(--brand-light);
+      color: var(--brand);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    /* NAV */
+    .nav {
+      display: flex;
+      border-bottom: 0.5px solid var(--border);
+      padding: 0 1.5rem;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 0.75rem 1rem;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+      margin-bottom: -0.5px;
+    }
+    .nav-btn.active { color: var(--brand); border-bottom-color: var(--brand); }
+    .nav-btn:hover:not(.active) { color: var(--text); }
+
+    /* PAGES */
+    .page { display: none; padding: 1.5rem; }
+    .page.active { display: block; }
+
+    /* SECTION TITLE */
+    .section-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 1rem;
+    }
+
+    /* PRODUCT GRID */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+    .product-card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      position: relative;
+    }
+    .product-card:hover { border-color: var(--brand-mid); }
+    .product-card.selected {
+      border-color: var(--brand);
+      background: var(--brand-light);
+    }
+    .product-card.selected .checkmark { display: flex; }
+    .checkmark {
+      display: none;
+      position: absolute;
+      top: 8px; right: 8px;
+      width: 20px; height: 20px;
+      background: var(--brand);
+      border-radius: 50%;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 11px;
+    }
+    .product-emoji { font-size: 28px; margin-bottom: 8px; }
+    .product-name { font-size: 14px; font-weight: 500; }
+    .product-price { font-size: 13px; color: var(--brand); font-weight: 500; margin-top: 2px; }
+    .product-stock { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* QTY */
+    .qty-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .qty-btn {
+      width: 26px; height: 26px;
+      border: 0.5px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface2);
+      cursor: pointer;
+      font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text);
+      transition: border-color 0.15s;
+    }
+    .qty-btn:hover { border-color: var(--brand-mid); }
+    .qty-num { font-size: 14px; font-weight: 500; min-width: 20px; text-align: center; }
+
+    /* FORM */
+    .form-section { margin-bottom: 1.25rem; }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      font-size: 15px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+      font-family: inherit;
+    }
+    .form-input:focus { border-color: var(--brand); }
+    .form-select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      font-size: 15px;
+      color: var(--text);
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      font-family: inherit;
+    }
+    .form-select:focus { border-color: var(--brand); }
+
+    /* CART */
+    .cart-summary {
+      background: var(--surface2);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      border: 0.5px solid var(--border);
+    }
+    .cart-empty { font-size: 14px; color: var(--muted); text-align: center; padding: 0.5rem 0; }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 0.5px solid var(--border);
+      font-size: 14px;
+    }
+    .cart-item:last-of-type { border-bottom: none; }
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      font-size: 15px;
+      font-weight: 500;
+      padding-top: 10px;
+      margin-top: 4px;
+      border-top: 0.5px solid var(--border);
+    }
+    .cart-total-price { color: var(--brand); }
+
+    /* INFO BOX */
+    .info-box {
+      background: var(--brand-light);
+      border-left: 3px solid var(--brand);
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--brand);
+      margin-bottom: 1.5rem;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    }
+
+    /* SUBMIT */
+    .submit-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--brand);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.15s;
+      font-family: inherit;
+    }
+    .submit-btn:hover { opacity: 0.88; }
+    .submit-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .admin-note {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* ORDERS */
+    .orders-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .clear-btn {
+      background: none;
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 6px 12px;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: inherit;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .clear-btn:hover { color: #c0392b; border-color: #c0392b; }
+    .order-card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      margin-bottom: 10px;
+    }
+    .order-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .order-name { font-size: 15px; font-weight: 500; }
+    .order-class { font-size: 13px; color: var(--muted); }
+    .order-date { font-size: 12px; color: var(--muted); }
+    .order-items { font-size: 13px; margin-bottom: 6px; }
+    .order-total { font-size: 14px; font-weight: 500; color: var(--brand); }
+    .no-orders { text-align: center; padding: 3rem 0; color: var(--muted); font-size: 14px; }
+  </style>
+</head>
+<body>
+<div class="site">
+
+  <div class="header">
+    <div class="logo-area">
+      <div class="logo-icon"><i class="ti ti-box"></i></div>
+      <div class="logo-text">
+        <h1>Origami Market</h1>
+        <p>El yapımı origami siparişi</p>
+      </div>
+    </div>
+    <div class="header-badge">Sadece okul teslimatı</div>
+  </div>
+
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showPage('katalog', this)">
+      <i class="ti ti-layout-grid"></i> Katalog
+    </button>
+    <button class="nav-btn" onclick="showPage('siparis', this)">
+      <i class="ti ti-shopping-cart"></i> Sipariş ver
+    </button>
+    <button class="nav-btn" onclick="showPage('gecmis', this)">
+      <i class="ti ti-list"></i> Siparişler
+    </button>
+  </nav>
+
+  <!-- KATALOG -->
+  <div id="page-katalog" class="page active">
+    <p class="section-title">Ürünler</p>
+    <div class="product-grid" id="katalog-grid"></div>
+    <div class="info-box">
+      Okulda teslim alınır &middot; Ödeme teslimatta yapılır
+    </div>
+  </div>
+
+  <!-- SİPARİŞ FORMU -->
+  <div id="page-siparis" class="page">
+    <div class="form-section">
+      <label class="form-label">Adın Soyadın</label>
+      <input class="form-input" type="text" id="inp-isim" placeholder="Örn: Ali Yılmaz">
+    </div>
+    <div class="form-section">
+      <label class="form-label">Sınıfın</label>
+      <select class="form-select" id="inp-sinif">
+        <option value="">Sınıf seç</option>
+        <option>9-A</option><option>9-B</option><option>9-C</option>
+        <option>10-A</option><option>10-B</option><option>10-C</option>
+        <option>11-A</option><option>11-B</option><option>11-C</option>
+        <option>12-A</option><option>12-B</option><option>12-C</option>
+      </select>
+    </div>
+
+    <p class="section-title">Ürün seç</p>
+    <div class="product-grid" id="siparis-grid"></div>
+
+    <p class="section-title">Sepet</p>
+    <div class="cart-summary" id="cart-summary">
+      <p class="cart-empty">Henüz ürün seçmedin.</p>
+    </div>
+
+    <div class="info-box">
+      Siparişin WhatsApp üzerinden iletilir. Ödemeyi teslimatta yaparsın.
+    </div>
+
+    <button class="submit-btn" id="submit-btn" onclick="siparisGonder()" disabled>
+      <i class="ti ti-brand-whatsapp"></i>
+      Siparişi WhatsApp'tan gönder
+    </button>
+    <p class="admin-note">Butona basınca WhatsApp açılır, mesajı gönderince sipariş tamamlanır.</p>
+  </div>
+
+  <!-- SİPARİŞ GEÇMİŞİ -->
+  <div id="page-gecmis" class="page">
+    <div class="orders-header">
+      <p class="section-title" style="margin:0">Kaydedilen siparişler</p>
+      <button class="clear-btn" onclick="tumunuSil()">Tümünü sil</button>
+    </div>
+    <div id="orders-list"></div>
+  </div>
+
+</div>
+
+<script>
+  // ============================================================
+  //  ÜRÜNLER — buraya kendi ürünlerini ekle
+  //  Her ürün: { id, ad, emoji, fiyat, stok }
+  //  stok: true = stokta var, false = tükendi
+  // ============================================================
+  const URUNLER = [
+    { id: 1, ad: "Tuzluk",           emoji: "🧂", fiyat: 10, stok: true },
+    { id: 2, ad: "Uçak",             emoji: "✈️",  fiyat: 5,  stok: true },
+    { id: 3, ad: "Klavye Tuşları",   emoji: "⌨️",  fiyat: 15, stok: true },
+    { id: 4, ad: "Zıplayan Kurbağa", emoji: "🐸", fiyat: 5,  stok: true },
+    { id: 5, ad: "Ninja Yıldızı",    emoji: "⭐", fiyat: 10, stok: true },
+  ];
+
+  // ============================================================
+  //  WHATSAPP NUMARASI — ülke koduyla birlikte yaz, başında + olmadan
+  //  Örnek: "905321234567"
+  // ============================================================
+  const WA_NUMARA = "90XXXXXXXXXXX";
+
+  // ============================================================
+  //  SINIFLAR — okuluna göre düzenle
+  // ============================================================
+  // Sınıf listesini değiştirmek istersen yukarıdaki <select> içindeki
+  // <option> etiketlerini düzenle.
+  // ============================================================
+
+  let sepet = {};
+
+  function showPage(id, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    btn.classList.add('active');
+    if (id === 'gecmis') renderOrders();
+  }
+
+  function renderKatalog() {
+    const g = document.getElementById('katalog-grid');
+    if (URUNLER.length === 0) {
+      g.innerHTML = '<p style="color:var(--muted);font-size:14px;">Henüz ürün eklenmedi.</p>';
+      return;
+    }
+    g.innerHTML = URUNLER.map(u => `
+      <div class="product-card">
+        <div class="product-emoji">${u.emoji}</div>
+        <div class="product-name">${u.ad}</div>
+        <div class="product-price">${u.fiyat} TL</div>
+        <div class="product-stock">${u.stok ? 'Stokta var' : 'Tükendi'}</div>
+      </div>
+    `).join('');
+  }
+
+  function renderSiparisGrid() {
+    const g = document.getElementById('siparis-grid');
+    if (URUNLER.length === 0) {
+      g.innerHTML = '<p style="color:var(--muted);font-size:14px;">Henüz ürün eklenmedi.</p>';
+      return;
+    }
+    g.innerHTML = URUNLER.map(u => {
+      const qty = sepet[u.id] || 0;
+      return `
+        <div class="product-card ${qty > 0 ? 'selected' : ''}" id="pcard-${u.id}">
+          <div class="checkmark"><i class="ti ti-check"></i></div>
+          <div class="product-emoji">${u.emoji}</div>
+          <div class="product-name">${u.ad}</div>
+          <div class="product-price">${u.fiyat} TL</div>
+          <div class="qty-row">
+            <button class="qty-btn" onclick="changeQty(${u.id}, -1)">−</button>
+            <span class="qty-num" id="qty-${u.id}">${qty}</span>
+            <button class="qty-btn" onclick="changeQty(${u.id}, 1)">+</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function changeQty(id, delta) {
+    sepet[id] = Math.max(0, (sepet[id] || 0) + delta);
+    if (sepet[id] === 0) delete sepet[id];
+    const card = document.getElementById('pcard-' + id);
+    const qtyEl = document.getElementById('qty-' + id);
+    if (card) card.classList.toggle('selected', (sepet[id] || 0) > 0);
+    if (qtyEl) qtyEl.textContent = sepet[id] || 0;
+    renderCart();
+  }
+
+  function renderCart() {
+    const el = document.getElementById('cart-summary');
+    const ids = Object.keys(sepet);
+    if (ids.length === 0) {
+      el.innerHTML = '<p class="cart-empty">Henüz ürün seçmedin.</p>';
+      document.getElementById('submit-btn').disabled = true;
+      return;
+    }
+    let html = '';
+    let toplam = 0;
+    ids.forEach(id => {
+      const u = URUNLER.find(x => x.id == id);
+      const ara = u.fiyat * sepet[id];
+      toplam += ara;
+      html += `<div class="cart-item"><span>${u.emoji} ${u.ad} × ${sepet[id]}</span><span>${ara} TL</span></div>`;
+    });
+    html += `<div class="cart-total"><span>Toplam</span><span class="cart-total-price">${toplam} TL</span></div>`;
+    el.innerHTML = html;
+    document.getElementById('submit-btn').disabled = false;
+  }
+
+  function siparisGonder() {
+    const isim = document.getElementById('inp-isim').value.trim();
+    const sinif = document.getElementById('inp-sinif').value;
+    if (!isim) { alert('Adını yaz lütfen.'); return; }
+    if (!sinif) { alert('Sınıfını seç lütfen.'); return; }
+    if (Object.keys(sepet).length === 0) { alert('Sepet boş.'); return; }
+
+    let satirlar = [
+      '*Yeni Origami Siparişi*',
+      `👤 ${isim}`,
+      `📚 ${sinif} sınıfı`,
+      '',
+      '*Ürünler:*'
+    ];
+    let toplam = 0;
+    Object.keys(sepet).forEach(id => {
+      const u = URUNLER.find(x => x.id == id);
+      const ara = u.fiyat * sepet[id];
+      toplam += ara;
+      satirlar.push(`• ${u.emoji} ${u.ad} × ${sepet[id]} = ${ara} TL`);
+    });
+    satirlar.push('', `*Toplam: ${toplam} TL*`);
+    satirlar.push('_Ödeme teslimatta yapılacak._');
+
+    const mesaj = encodeURIComponent(satirlar.join('\n'));
+    const url = `https://wa.me/${WA_NUMARA}?text=${mesaj}`;
+
+    // Siparişi localStorage'a kaydet
+    const gecmis = JSON.parse(localStorage.getItem('origami_orders') || '[]');
+    gecmis.unshift({
+      isim, sinif,
+      urunler: Object.keys(sepet).map(id => {
+        const u = URUNLER.find(x => x.id == id);
+        return { ad: u.ad, emoji: u.emoji, qty: sepet[id], fiyat: u.fiyat };
+      }),
+      toplam,
+      tarih: new Date().toLocaleString('tr-TR')
+    });
+    localStorage.setItem('origami_orders', JSON.stringify(gecmis));
+
+    window.open(url, '_blank');
+
+    // Formu sıfırla
+    sepet = {};
+    document.getElementById('inp-isim').value = '';
+    document.getElementById('inp-sinif').value = '';
+    renderSiparisGrid();
+    renderCart();
+  }
+
+  function renderOrders() {
+    const gecmis = JSON.parse(localStorage.getItem('origami_orders') || '[]');
+    const el = document.getElementById('orders-list');
+    if (gecmis.length === 0) {
+      el.innerHTML = '<div class="no-orders"><i class="ti ti-inbox" style="font-size:32px;display:block;margin-bottom:8px;"></i>Henüz sipariş yok.</div>';
+      return;
+    }
+    el.innerHTML = gecmis.map(o => `
+      <div class="order-card">
+        <div class="order-top">
+          <div>
+            <div class="order-name">${o.isim}</div>
+            <div class="order-class">${o.sinif}</div>
+          </div>
+          <div class="order-date">${o.tarih}</div>
+        </div>
+        <div class="order-items">${o.urunler.map(u => `${u.emoji} ${u.ad} × ${u.qty}`).join(', ')}</div>
+        <div class="order-total">${o.toplam} TL</div>
+      </div>
+    `).join('');
+  }
+
+  function tumunuSil() {
+    if (confirm('Tüm sipariş geçmişi silinecek. Emin misin?')) {
+      localStorage.removeItem('origami_orders');
+      renderOrders();
+    }
+  }
+
+  // İlk render
+  renderKatalog();
+  renderSiparisGrid();
+  renderCart();
+</script>
+</body>
+</html>
