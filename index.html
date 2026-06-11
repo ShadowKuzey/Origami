@@ -286,6 +286,7 @@
       content:''; position:absolute; inset:0;
       background:radial-gradient(circle at 50% 0%,rgba(74,222,128,.06),transparent 70%);
       opacity:0; transition:opacity .2s;
+      pointer-events: none;
     }
     .product-card:hover { border-color:rgba(74,222,128,.3); transform:translateY(-2px); }
     .product-card:hover::before { opacity:1; }
@@ -625,13 +626,21 @@
             <div class="cart-item-price">${u.fiyat} TL × ${sepet[id]} = ${ara} TL</div>
           </div>
           <div class="cart-item-qty">
-            <button class="cqty-btn" onclick="cartQty(${u.id},-1)">−</button>
+            <button class="cqty-btn" data-id="${u.id}" data-delta="-1">−</button>
             <span class="cqty-num">${sepet[id]}</span>
-            <button class="cqty-btn" onclick="cartQty(${u.id},1)">+</button>
+            <button class="cqty-btn" data-id="${u.id}" data-delta="1">+</button>
           </div>
         </div>`;
     });
     list.innerHTML = html;
+
+    // Event listener ile bağla
+    list.querySelectorAll('.cqty-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        cartQty(parseInt(this.dataset.id), parseInt(this.dataset.delta));
+      });
+    });
 
     // Garanti varsa toplama ekle
     const garanti = deliveryMode === 'sinif'
@@ -722,9 +731,17 @@
         <div class="product-name">${u.ad}</div>
         <div class="product-price">${u.fiyat} TL</div>
         <div class="product-stock">${u.stok ? '✦ Stokta var' : '— Tükendi'}</div>
-        <button class="add-btn" onclick="sepeteEkle(${u.id})">+ Sepete Ekle</button>
+        <button class="add-btn" data-id="${u.id}">+ Sepete Ekle</button>
       </div>
     `).join('');
+
+    // Event listener ile bağla — inline onclick yerine
+    g.querySelectorAll('.add-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        sepeteEkle(parseInt(this.dataset.id));
+      });
+    });
   }
 
   // Garanti değişince toplamı güncelle
